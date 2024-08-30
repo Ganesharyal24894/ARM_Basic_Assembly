@@ -55,11 +55,18 @@ loop:
 	//add some delay here
 	bl delay
 
+	ldr r1,=delay_var
+	ldr r2,[r1]
+	mov r3,#2
+	mul r2,r3
+	str r2,[r1]
+
 	b loop
 
 
 delay:
-	ldr r2,=DELAY
+	ldr r2,=delay_var
+	ldr r2,[r2]
 
 delay_cont:
 	subs r2,r2,#1
@@ -69,3 +76,8 @@ delay_cont:
 
 
 	b .
+
+
+.data
+delay_var:
+	.word 100000
