@@ -1,18 +1,18 @@
 PROJECT_NAME = test
 SRC_DIR = src
-BUILD_DIR = build
+BUILD_DIR = mybuild
 
 OUTPUT = $(BUILD_DIR)/$(PROJECT_NAME).elf
 
+LINKER_FLAGS = -Ttext=0x08000000 -Tdata=0x20000000
+
 all : flash
 
-build : $(OUTPUT)
-
-$(OUTPUT) : $(SRC_DIR)/$(PROJECT_NAME).s | $(BUILD_DIR)
+build : $(SRC_DIR)/$(PROJECT_NAME).s | $(BUILD_DIR)
 	 arm-none-eabi-as -g $(SRC_DIR)/$(PROJECT_NAME).s -o $(BUILD_DIR)/$(PROJECT_NAME).o
-	 arm-none-eabi-ld $(BUILD_DIR)/$(PROJECT_NAME).o -o $(BUILD_DIR)/$(PROJECT_NAME).elf -Ttext=0x08000000
+	 arm-none-eabi-ld $(BUILD_DIR)/$(PROJECT_NAME).o -o $(BUILD_DIR)/$(PROJECT_NAME).elf $(LINKER_FLAGS)
 
-flash : $(OUTPUT)
+flash : build
 	openocd -f interface/stlink-v2.cfg -f target/stm32f4x.cfg -c "program $^ verify reset exit"
 
 gdb : flash
