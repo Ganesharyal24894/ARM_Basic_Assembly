@@ -4,9 +4,9 @@
 .thumb
 
 
-.word 0x20000400
-.word 0x080000ed
-.space 0xe4
+.word 0x20010000
+.word 0x08000195
+.space 396
 
 
 .equ RCC_BASE_ADD,0x40023800
@@ -26,6 +26,22 @@
 
 .global main
 main:
+	/* Copy the data segment initializers from flash to SRAM */
+	ldr r0, =_sdata
+	ldr r1, =_edata
+	ldr r2, =_sload_data
+	movs r3, #0
+	b LoopCopyDataInit
+
+	CopyDataInit:
+	ldr r4, [r2, r3]
+	str r4, [r0, r3]
+	adds r3, r3, #4
+
+	LoopCopyDataInit:
+	adds r4, r0, r3
+	cmp r4, r1
+	bcc CopyDataInit
 
 	//enable GPIOC port
 	ldr r0,=RCC_BASE_ADD
@@ -55,10 +71,11 @@ loop:
 	//add some delay here
 	bl delay
 
+	//increasing delay
 	ldr r1,=delay_var
 	ldr r2,[r1]
-	mov r3,#2
-	mul r2,r3
+	ldr r3,=100000
+	add r2,r3
 	str r2,[r1]
 
 	b loop
@@ -80,4 +97,4 @@ delay_cont:
 
 .data
 delay_var:
-	.word 100000
+	.word 400000
