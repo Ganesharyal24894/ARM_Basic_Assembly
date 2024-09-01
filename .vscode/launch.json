@@ -1,0 +1,61 @@
+
+/*STlink and PicoProbe configuration for Cortex-Debug extension*/
+
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "PicoProbe_Debug",
+            "cwd": "${workspaceRoot}",
+            "executable": "${workspaceRoot}/mybuild/test.elf",
+            "request": "launch",
+            "type": "cortex-debug",
+            "servertype": "openocd",
+            "interface": "swd",
+            "device": "STM32F401CCU6",
+            "runToEntryPoint": "main",
+            "svdFile": "${workspaceRoot}/config_files/svd/STM32F401.svd",
+            "configFiles": [
+                "${workspaceRoot}/config_files/cmsis-dap.cfg",
+                "${workspaceRoot}/config_files/stm32f4x.cfg"
+            ],
+            "preLaunchCommands": [
+                "set mem inaccessible-by-default off",
+                "monitor reset init"
+            ],
+            "postLaunchCommands": [
+                "monitor reset init",
+                "monitor sleep 200"
+            ]
+        },
+        {
+            "name": "STLink_Debug",
+            "cwd": "${workspaceRoot}",
+            "executable": "${workspaceRoot}/mybuild/test.elf",
+            "request": "launch",
+            "type": "cortex-debug",
+            "servertype": "openocd",
+            "interface": "swd",
+            "device": "STM32F401CCU6",
+            "runToEntryPoint": "main",
+            "svdFile": "${workspaceRoot}/config_files/svd/STM32F401.svd",
+            "configFiles": [
+                "${workspaceRoot}/config_files/stlink.cfg",
+                "${workspaceRoot}/config_files/stm32f4x.cfg"
+            ],
+            "preLaunchCommands": [
+                "set mem inaccessible-by-default off",
+                "monitor reset init"
+            ],
+            "postLaunchCommands": [
+                "monitor reset init",
+                "monitor sleep 200"
+            ]
+        }
+    ],
+   
+}
+
+
+
+

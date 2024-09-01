@@ -9,19 +9,26 @@
 .space 396
 
 
-.equ RCC_BASE_ADD,0x40023800
-.equ GPIOC_BASE_ADD,0x40020800
-
-.equ AHB1ENR_OFF,0x30
-.equ MODER_OFF,0x00
-.equ BSRR_OFF,0x18
-.equ ODR_OFF,0x14
-
-.equ GPIOC_EN_BIT,0x04
-.equ ODR_13_BIT,13
+RCC_BASE_ADD = 0x40023800
+GPIOC_BASE_ADD = 0x40020800
+GPIOA_BASE_ADD = 0x40020000
 
 
-.equ DELAY,800000
+AHB1ENR_OFF = 0x30
+MODER_OFF = 0x00
+IDR_OFF = 0x10
+BSRR_OFF = 0x18
+ODR_OFF = 0x14
+
+GPIOC_EN_BIT = 0x04
+GPIOA_EN_BIT = 0x01
+IDR_BIT = 8
+BUTTON_MODER_BIT = IDR_BIT*2
+ODR_BIT = 13
+
+
+
+DELAY = 800000
 
 
 .global main
@@ -44,40 +51,58 @@ main:
 	bcc CopyDataInit
 
 	//enable GPIOC port
-	ldr r0,=RCC_BASE_ADD
-	ldr r1,[r0,#AHB1ENR_OFF]
-	orr r1,r1,#GPIOC_EN_BIT
-	str r1,[r0,#AHB1ENR_OFF]
+	ldr r0,=RCC_BASE_ADD+AHB1ENR_OFF
+	ldr r1,[r0]
+	orr r1,#GPIOC_EN_BIT
+	orr r1,#GPIOA_EN_BIT
+	str r1,[r0]
+
+	//set PA0 as Input
+	ldr r0,=GPIOA_BASE_ADD+MODER_OFF
+	ldr r1,[r0]
+	mov r2, #0x03
+	lsl r2,#BUTTON_MODER_BIT
+   	bic r1,r2
+	str r1,[r0]
 
 	//set PC13 as Output
-	ldr r0,=GPIOC_BASE_ADD
-	ldr r1,[r0,#MODER_OFF]
+	ldr r0,=GPIOC_BASE_ADD+MODER_OFF
+	ldr r1,[r0]
 	mov r2, #1
    	lsl r2, r2, #26
     orr r1, r1, r2
     mov r2, #1
     lsl r2, r2, #27
     bic r1, r1, r2
-	str r1,[r0,#MODER_OFF]
+	str r1,[r0]
+
+
 
 loop:
+
+	//Read User Input button PA0
+	ldr r0,=GPIOA_BASE_ADD+IDR_OFF
+	ldr r1,[r0]
+	mov r0,#1
+	lsl	r0,#IDR_BIT
+	and r1,r0
+	cmp r1,#0
+	bne ButtonNotPressed
+
+	
+
 	//Toggle PC13
+	ldr r0,=GPIOC_BASE_ADD+ODR_OFF
 	mov r1, #1
-   	lsl r1, #ODR_13_BIT
-	ldr r2,[r0,#ODR_OFF]
+   	lsl r1, #ODR_BIT
+	ldr r2,[r0]
 	eor r2,r1
-	str r2,[r0,#ODR_OFF]
+	str r2,[r0]
 
 	//add some delay here
 	bl delay
-
-	//increasing delay
-	ldr r1,=delay_var
-	ldr r2,[r1]
-	ldr r3,=100000
-	add r2,r3
-	str r2,[r1]
-
+	
+ButtonNotPressed:
 	b loop
 
 
