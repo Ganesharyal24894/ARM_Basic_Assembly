@@ -4,9 +4,9 @@
 .thumb
 
 
-.word 0x20000400
-.word 0x080000ed
-.space 0xe4
+.word 0x20010000
+.word 0x08000195
+.space 396
 
 
 .equ RCC_BASE_ADD,0x40023800
@@ -26,7 +26,7 @@
 
 .global main
 main:
-
+	
 	//enable GPIOC port
 	ldr r0,=RCC_BASE_ADD
 	ldr r1,[r0,#AHB1ENR_OFF]
@@ -60,7 +60,6 @@ loop:
 
 delay:
 	ldr r2,=DELAY
-
 delay_cont:
 	subs r2,r2,#1
 	bne delay_cont
