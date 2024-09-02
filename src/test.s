@@ -57,7 +57,7 @@ main:
 	orr r1,#GPIOA_EN_BIT
 	str r1,[r0]
 
-	//set PA0 as Input
+	//set PA8 as Input
 	ldr r0,=GPIOA_BASE_ADD+MODER_OFF
 	ldr r1,[r0]
 	mov r2, #0x03
