@@ -80,7 +80,7 @@ main:
 
 loop:
 
-	//Read User Input button PA0
+	//Read User Input button PA8
 	ldr r0,=GPIOA_BASE_ADD+IDR_OFF
 	ldr r1,[r0]
 	mov r0,#1
